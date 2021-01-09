@@ -1,0 +1,61 @@
+---
+- name: Remove the user default ubuntu user
+  user:
+    name: ubuntu
+    state: absent
+    remove: yes
+
+- name: Remove ubuntu user folder
+  file:
+    path: /home/ubuntu
+    state: absent
+
+- name: check if neofetch config directory exists
+  stat:
+    path: "/home/{{ system_user }}/.config/neofetch"
+  register: stat_result
+
+- name: Remove motd
+  command: update-rc.d motd remove
+  when: stat_result.stat.exists == false
+
+- name: Hush login prompt
+  file:
+    dest: "/home/{{ system_user }}/.hushlogin"
+    state: touch
+    group: "users"
+    owner: "{{ system_user }}"
+    mode: 0775
+
+- name: Create config directory
+  file:
+    path: "/home/{{ system_user }}/.config"
+    state: directory
+    recurse: true
+    group: "users"
+    owner: "{{ system_user }}"
+    mode: 0775
+
+- name: Create neofetch directory
+  file:
+    path: "/home/{{ system_user }}/.config/neofetch"
+    state: directory
+    recurse: true
+    group: "users"
+    owner: "{{ system_user }}"
+    mode: 0775
+
+- name: Add custom neofetch config
+  copy:
+    src: neofetch.conf
+    dest: "/home/{{ system_user }}/.config/neofetch/config.conf"
+    group: "users"
+    owner: "{{ system_user }}"
+    mode: 0775
+
+- name: Set Neofetch config to Bash profile
+  blockinfile:
+    path: /home/{{ system_user }}/.profile
+    marker: "# {mark} ANSIBLE NEOFETCH CONFIG"
+    block: |
+      neofetch --ascii_distro raspbian_small

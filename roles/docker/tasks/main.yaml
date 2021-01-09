@@ -1,0 +1,35 @@
+---
+- name: Add official Docker GPG key
+  apt_key:
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    url: "https://download.docker.com/linux/ubuntu/gpg"
+    state: present
+
+- name: Add official Docker APT repository
+  apt_repository:
+    repo: deb [arch=arm64] https://download.docker.com/linux/ubuntu {{ansible_distribution_release | lower}} stable
+    state: present
+    filename: "docker-official"
+    update_cache: yes
+
+- name: Update the `apt` package index
+  apt:
+    update_cache: yes
+
+- name: Install docker-ce and docker-compose
+  apt:
+    update_cache: yes
+    install_recommends: yes
+    force_apt_get: true
+    state: present
+    pkg:
+      - docker-ce
+      - docker-compose
+      - docker-ce-cli
+      - containerd.io
+
+- name: Add user to the Docker group
+  user:
+    name: "{{ system_user }}"
+    groups: docker
+    append: yes
