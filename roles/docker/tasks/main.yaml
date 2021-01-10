@@ -33,3 +33,8 @@
     name: "{{ system_user }}"
     groups: docker
     append: yes
+
+- name: Create internal network
+  community.docker.docker_network:
+    name: internal
+    internal: yes

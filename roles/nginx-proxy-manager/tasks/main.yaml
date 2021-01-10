@@ -1,0 +1,53 @@
+---
+- name: Check /data/nginx/ exists.
+  stat:
+    path: /data/nginx/
+  register: dir_structure
+
+- name: Create /data/nginx/
+  file:
+    path: /data/nginx/
+    state: directory
+    mode: 0755
+    group: root
+    owner: root
+  when: dir_structure.stat.exists == false
+
+- name: Check /data/letsencrypt/ exists.
+  stat:
+    path: /data/letsencrypt/
+  register: dir_structure
+
+- name: Create /data/letsencrypt/
+  file:
+    path: /data/letsencrypt/
+    state: directory
+    mode: 0755
+    group: root
+    owner: root
+  when: dir_structure.stat.exists == false
+
+- name: Create NGINX Reverse Proxy Manager container
+  community.docker.docker_container:
+    name: nginx-proxy-manager
+    image: jc21/nginx-proxy-manager
+    pull: true
+    state: started
+    restart_policy: unless-stopped
+    container_default_behavior: compatibility
+    env:
+      DB_SQLITE_FILE: "/data/database.sqlite"
+    volumes:
+      - /data/nginx/:/data
+      - /data/letsencrypt/:/etc/letsencrypt
+    ports:
+      # Public HTTP Port:
+      - '80:80'
+      # Public HTTPS Port:
+      - '443:443'
+      # Admin Web Port:
+      - '81:81'
+    network_mode: bridge
+    networks:
+      - name: internal
+      - name: bridge

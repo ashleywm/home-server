@@ -18,6 +18,9 @@
     - role: docker
       tags:
         - provision-host
+    - role: nginx-proxy-manager
+      tags:
+        - core-services
     - role: watchtower
       tags:
         - core-services
