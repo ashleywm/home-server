@@ -1,18 +1,15 @@
 ---
 - name: Create dozzle container
   community.docker.docker_container:
-    name: dozzle
-    hostname: dozzle
-    image: amir20/dozzle
+    name: "{{ container_name }}"
+    hostname: "{{ container_name }}"
+    image: "{{ image }}"
     pull: true
     state: started
     detach: yes
     restart_policy: unless-stopped
     container_default_behavior: compatibility
-    env:
-      DOZZLE_ADDR: :3000
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    env: "{{ env }}"
+    volumes: "{{ volumes }}"
     network_mode: internal
-    networks:
-      - name: internal
+    networks: "{{ networks }}"

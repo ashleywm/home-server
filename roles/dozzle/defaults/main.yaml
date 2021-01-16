@@ -1,0 +1,10 @@
+---
+container_name: dozzle
+image: amir20/dozzle
+volumes: [
+  "/var/run/docker.sock:/var/run/docker.sock"
+]
+networks:
+  - name: internal
+env:
+  DOZZLE_ADDR: :3000
