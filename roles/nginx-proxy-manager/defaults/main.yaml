@@ -1,0 +1,20 @@
+---
+container_name: nginx-proxy-manager
+image: jc21/nginx-proxy-manager
+networks:
+  - name: internal
+  - name: bridge
+env:
+  DB_SQLITE_FILE: "/data/database.sqlite"
+ports: 
+  # Public HTTP Port:
+  - '80:80'
+  # Public HTTPS Port:
+  - '443:443'
+  # Admin Web Port:
+  - '81:81'
+volume_mapping:
+  - host_path: /data/nginx/
+    container_path: /data
+  - host_path: /data/letsencrypt/
+    container_path: /etc/letsencrypt

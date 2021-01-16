@@ -1,53 +1,31 @@
 ---
-- name: Check /data/nginx/ exists.
+- name: Check if host path exists.
   stat:
-    path: /data/nginx/
-  register: dir_structure
+    path: "{{ item.host_path }}"
+  register: dir_info
+  with_items: "{{ volume_mapping }}"
 
-- name: Create /data/nginx/
+- name: Create host path
   file:
-    path: /data/nginx/
+    path: "{{ item.1.host_path }}"
     state: directory
     mode: 0755
     group: root
     owner: root
-  when: dir_structure.stat.exists == false
+  when: not dir_info.results[item.0].stat.exists
+  with_indexed_items: "{{ volume_mapping }}"
 
-- name: Check /data/letsencrypt/ exists.
-  stat:
-    path: /data/letsencrypt/
-  register: dir_structure
-
-- name: Create /data/letsencrypt/
-  file:
-    path: /data/letsencrypt/
-    state: directory
-    mode: 0755
-    group: root
-    owner: root
-  when: dir_structure.stat.exists == false
-
-- name: Create NGINX Reverse Proxy Manager container
+- name: Create NGINX Proxy Manager container
   community.docker.docker_container:
-    name: nginx-proxy-manager
-    image: jc21/nginx-proxy-manager
+    name: "{{ container_name }}"
+    image: "{{ image }}"
     pull: true
     state: started
     restart_policy: unless-stopped
     container_default_behavior: compatibility
-    env:
-      DB_SQLITE_FILE: "/data/database.sqlite"
-    volumes:
-      - /data/nginx/:/data
-      - /data/letsencrypt/:/etc/letsencrypt
-    ports:
-      # Public HTTP Port:
-      - '80:80'
-      # Public HTTPS Port:
-      - '443:443'
-      # Admin Web Port:
-      - '81:81'
+    env: "{{ env }}"
+    volumes:  >-
+      {% for volume in volume_mapping %}{{ volume.host_path }}:{{volume.container_path}}{% if not loop.last %},{% endif %}{% endfor %}
+    ports: "{{ ports }}"
     network_mode: bridge
-    networks:
-      - name: internal
-      - name: bridge
+    networks: "{{ networks }}"
