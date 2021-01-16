@@ -1,12 +1,11 @@
 ---
 - name: Create watchtower container
   community.docker.docker_container:
-    name: watchtower
-    image: containrrr/watchtower
+    name: "{{ container_name }}"
+    image: "{{ image }}"
     pull: true
     state: started
     detach: yes
     restart_policy: unless-stopped
     container_default_behavior: compatibility
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    volumes: "{{ volumes }}"
