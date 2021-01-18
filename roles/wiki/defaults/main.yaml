@@ -1,0 +1,18 @@
+---
+container_name: wiki
+image: requarks/wiki:2.5
+owner_id: "1000"
+group_id: "1000"
+networks:
+  - name: internal
+env:
+  CONFIG_FILE: "/wiki/custom/config.yaml"
+volume_mapping:
+  - host_path: /data/wiki/
+    container_path: /wiki/custom/
+  - host_path: /data/wiki/sideload/
+    container_path: /wiki/data/sideload/
+wiki_port: 3001
+db_type: sqlite
+sqlite_path: "/wiki/custom/database.sqlite"
+offline: true
