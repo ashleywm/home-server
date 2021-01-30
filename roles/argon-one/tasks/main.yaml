@@ -1,0 +1,13 @@
+---
+- name: Clone a argon-one git repo to /data/argon-one
+  git:
+    repo: https://github.com/meuter/argon-one-case-ubuntu-20.04.git
+    dest: /data/argon-one
+
+- name: Set argon-one permissions
+  file:
+    path: /data/argon-one/argon1.sh
+    mode: a+x
+
+- name: Run argon-one install script
+  command: bash /data/argon-one/argon1.sh
