@@ -1,0 +1,14 @@
+---
+- name: Create cloudflared container
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    image: "{{ image }}"
+    pull: true
+    state: started
+    restart_policy: unless-stopped
+    container_default_behavior: compatibility
+    network_mode: bridge
+    networks:
+      - name: bridge
+      - name: pihole_network
+        ipv4_address: 10.0.0.2

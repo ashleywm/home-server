@@ -1,0 +1,19 @@
+---
+container_name: pihole
+image: pihole/pihole
+env:
+  DNS1: "1.1.1.1"
+  IPv6: "false"
+  TZ: "Europe/London"
+  DNSMASQ_LISTENING: "all"
+  WEBPASSWORD: admin"
+volume_mapping:
+  - host_path: /data/pihole/data
+    container_path: /etc/pihole
+  - host_path: /data/pihole/dnsmasq/
+    container_path: /etc/dnsmasq.d
+ports: 
+  - "3010:80"
+  - "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:53:53/tcp"
+  - "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:53:53/udp"
+  - "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:67:67/udp"

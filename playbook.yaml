@@ -24,6 +24,12 @@
     - role: nginx-proxy-manager
       tags:
         - core-services
+    - role: pihole
+      tags:
+        - core-services
+    - role: cloudflared
+      tags:
+        - core-services
     - role: watchtower
       tags:
         - core-services
