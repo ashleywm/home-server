@@ -1,0 +1,12 @@
+---
+container_name: syncthing
+image: syncthing/syncthing:latest
+volume_mapping:
+  - host_path: /data/syncthing/
+    container_path: /var/syncthing
+networks:
+  - name: internal
+  - name: bridge
+ports: 
+  - "3020:8384"
+  - "22000:22000"

@@ -36,3 +36,6 @@
     - role: dozzle
       tags:
         - core-services
+    - role: syncthing
+      tags:
+        - services

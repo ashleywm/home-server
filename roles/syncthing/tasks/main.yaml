@@ -1,0 +1,31 @@
+---
+- name: Check if host path exists.
+  stat:
+    path: "{{ item.host_path }}"
+  register: dir_info
+  with_items: "{{ volume_mapping }}"
+
+- name: Create host path
+  file:
+    path: "{{ item.1.host_path }}"
+    state: directory
+    mode: 0755
+    group: "root"
+    owner: "root"
+  when: not dir_info.results[item.0].stat.exists
+  with_indexed_items: "{{ volume_mapping }}"
+
+- name: Create syncthing container
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    image: "{{ image }}"
+    pull: true
+    state: started
+    restart_policy: unless-stopped
+    container_default_behavior: compatibility
+    env: "{{ env }}"
+    volumes:  >-
+      {% for volume in volume_mapping %}{{ volume.host_path }}:{{volume.container_path}}{% if not loop.last %},{% endif %}{% endfor %}
+    ports: "{{ ports }}"
+    network_mode: bridge
+    networks: "{{ networks }}"
