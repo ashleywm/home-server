@@ -36,6 +36,3 @@
     - role: dozzle
       tags:
         - core-services
-    - role: wiki
-      tags:
-        - services
